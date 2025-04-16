@@ -38,15 +38,16 @@ def pick(paragraphs, select, k):
     """
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
-    Selected_Paragraphs = []               
-    for i in range(len(paragraphs)):
-        if select(paragraphs[i]):
+    Selected_Paragraphs = []              # create an empty list to store the selected paragraphs
+    for i in range(len(paragraphs)):      # iterate through the paragraphs
+        if select(paragraphs[i]):         # if the paragraph meets the select function's criteria
             Selected_Paragraphs.append(paragraphs[i])
+
     
-    if k >= len(Selected_Paragraphs):
-        return ''
-    else:
-        return Selected_Paragraphs[k]
+    if k >= len(Selected_Paragraphs):      # if k is greater than the number of selected paragraphs
+        return ''                         # return an empty string
+    else:                                # otherwise
+        return Selected_Paragraphs[k]     # return the kth paragraph
     # END PROBLEM 1
 
 
@@ -67,6 +68,21 @@ def about(subject):
 
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    # note that in the function "pick" above, 
+    # the "select" function takes in paragraph[i],
+    # so here we should not write a "for" loop to go through the whole paragraph
+
+    ## ['Cute Dog!', 'That is a cat.', 'Nice pup!'] is paragraph
+    ## Cute Dog is the first term of paragraph, named as word below
+    def judge(word):
+        processed_sequence = split(lower(remove_punctuation(word)))
+        for sub_i in subject:
+            if sub_i in processed_sequence:
+                return True
+        return False
+    return judge
+        
+
     # END PROBLEM 2
 
 
@@ -97,6 +113,23 @@ def accuracy(typed, source):
     source_words = split(source)
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    lena = len(typed_words)
+    lenb = len(source_words)
+    length = min(lena,lenb)
+
+    if lena ==0 or lenb ==0:
+        if lena+lenb == 0:
+            return 100.0 # both are 0
+        else:
+            return 0.0
+    
+    right = 0
+    for i in range(length):
+        if typed_words[i] == source_words[i]:
+            right += 1
+    
+    return right/lena*100.0
+
     # END PROBLEM 3
 
 
@@ -115,6 +148,7 @@ def wpm(typed, elapsed):
     assert elapsed > 0, "Elapsed time must be positive"
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    return len(typed)/5 /  (elapsed/60)  
     # END PROBLEM 4
 
 
@@ -176,6 +210,33 @@ def autocorrect(typed_word, word_list, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    if typed_word in word_list: # If the typed_word is contained inside the word_list, autocorrect returns that word.
+        return typed_word
+    
+    ### Create an allowed_word_list whose diff <= limit
+    allowed_word_list = []      #Otherwise, autocorrect returns the word from word_list that has the lowest difference from the provided typed_word. 
+    allowed_word_diff = []      #This difference is the number returned by the diff_function.
+    for _ in range(len(word_list)):
+        if diff_function(typed_word,word_list[_],limit) <= limit:
+            
+            allowed_word_list.append(word_list[_])
+            allowed_word_diff.append(diff_function(typed_word, word_list[_], limit))
+            
+    ### no word allowed
+    if len(allowed_word_list) == 0:#However, if the lowest difference between typed_word and any of the words in word_list is greater than limit, then typed_word is returned instead.
+        return typed_word
+    ### allowed_word, least diff
+    else:
+        closest_word_list = []
+        minimum_diff = min(allowed_word_diff, key = abs)
+        
+        for _ in range(len(allowed_word_list)):
+            
+            if allowed_word_diff[_] == minimum_diff:
+                closest_word_list.append(allowed_word_list[_])
+    
+        return closest_word_list[0]
+
     # END PROBLEM 5
 
 
